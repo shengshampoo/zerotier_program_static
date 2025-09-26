@@ -24,6 +24,7 @@ ENV ZT_CARGO_FLAGS="-C target-feature=+crt-static -C linker=clang -C strip=symbo
 ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=clang
 ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=clang
 ENV ZT_STATIC=1
+ENV ZT_NONFREE=1
 ENV XZ_OPT=-e9
 
 COPY build-static-zerotier.sh build-static-zerotier.sh
