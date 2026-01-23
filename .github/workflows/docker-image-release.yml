@@ -1,0 +1,39 @@
+name: Docker Image CI - X86_64/AARCH64 for Chimera Linux to continuous tags
+
+on:
+  push:
+    branches: [ "main" ]
+    tags:
+      - 'continuous'
+  pull_request:
+    branches: [ "main" ]
+  # run it manually
+  workflow_dispatch:      
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build --tag builderust .
+
+    - name: build static program with chimera linux docker
+      run: |
+        docker run --cidfile=builderust.cid builderust true
+        docker cp "$(cat builderust.cid):work/artifact/." .
+
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: ./zerotiermm.tar.xz
+        asset_name: zerotiermm-${{ runner.os }}-${{ runner.arch }}.tar.xz
+        tag: refs/tags/continuous
+        overwrite: true
+        body: "Fully static zerotier binary using chimera linux docker containers."        
